@@ -1,0 +1,72 @@
+body {
+	margin: 0;
+	padding: 0;
+	background-color: #F6F2F2;
+}
+.header-wrapper {
+	background-color: #000000;
+	opacity: 80%;
+	max-width: 1249px;
+	min-width: 496px;
+	height: 89px;
+	margin: 29px auto 0 auto;
+}
+.site-menu {
+	padding: 0;
+	display: block;
+	text-align: center;
+}
+.site-menu li {
+	display: inline-block;
+	padding: 38px 24px 27px;
+
+}
+.site-menu li:hover {
+	background-color: #FF3F40;
+}
+.site-menu a {
+	text-transform: uppercase;
+	text-decoration: none;
+	color: #E0E0E0;
+	font-size: 14px;
+	line-height: 171%;
+}
+.main-wrapper {
+	max-width: 1249px;
+	margin: 103px auto 111px auto;
+}
+.main-text-wrapper {
+	display: inline-block;
+	max-width: 50%;
+	padding-bottom: 40px;
+}
+.main-img-wrapper {
+	display: inline-block;
+	float: right;
+}
+.main-text-wrapper h1 {
+	display: block;
+	text-transform: uppercase;
+	font-size: 60px;
+	line-height: 120%;
+	margin-top: 0;
+}
+.main-text-wrapper p {
+	display: block;
+	font-size: 15.9953px;
+	line-height: 175%;
+	max-width: 545px;
+	margin-top: 0;
+}
+.contact-btn {
+	display: block;
+	height: 35px;
+	width: 227px;
+	background-color: #FF2D2D;
+	font-size: 18.0412px;
+	line-height: 188%;
+	color: #FFFFFF;
+	text-align: center;
+	margin-top: 60px;
+    padding: 10px 0;
+}
