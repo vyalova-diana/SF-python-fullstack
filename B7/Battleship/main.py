@@ -137,6 +137,7 @@ class Board:
     def begin(self):
         self.busy = []
 
+    @property
     def defeat(self):
         return self.damage_count == len(self.ships)
 
@@ -190,14 +191,14 @@ class Game:
     def __init__(self, size=6):
         self.size = size
         self.lens = [3, 2, 2, 1, 1, 1, 1]
-        user_board = self.random_board()
-        ai_board = self.random_board()
+        user_board = self.random_board
+        ai_board = self.random_board
         ai_board.hid = True
 
         self.ai = AI(ai_board, user_board)
         self.us = User(user_board, ai_board)
 
-    def try_board(self):
+    def __try_board(self):
         board = Board(size=self.size)
         attempts = 0
         for le in self.lens:
@@ -214,10 +215,11 @@ class Game:
         board.begin()
         return board
 
+    @property
     def random_board(self):
         board = None
         while board is None:
-            board = self.try_board()
+            board = self.__try_board()
         return board
 
     @staticmethod
@@ -245,7 +247,7 @@ class Game:
         for u, a in zip(user_list, ai_list):
             print(u, a, sep="     ")
 
-    def loop(self):
+    def __loop(self):
         num = 0  # move number
         while True:
             self.print_boards()
@@ -260,12 +262,12 @@ class Game:
             if repeat:
                 num -= 1
 
-            if self.ai.board.defeat():
+            if self.ai.board.defeat:
                 print("-" * 20)
                 print("Пользователь выиграл!")
                 break
 
-            if self.us.board.defeat():
+            if self.us.board.defeat:
                 print("-" * 20)
                 print("Компьютер выиграл!")
                 break
@@ -274,7 +276,7 @@ class Game:
 
     def start(self):
         self.greet()
-        self.loop()
+        self.__loop()
 
 
 g = Game()
