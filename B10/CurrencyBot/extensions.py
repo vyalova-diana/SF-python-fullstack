@@ -1,7 +1,7 @@
 import telebot
 import json
 import requests
-from config import *
+from config import currencies
 
 
 class APIException(Exception):

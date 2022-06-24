@@ -1,8 +1,9 @@
+import os
 import telebot
 from config import *
 from extensions import APIException, CurrencyConvert
 
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot(os.getenv('TOKEN'))
 
 
 @bot.message_handler(commands=['help', 'start'])

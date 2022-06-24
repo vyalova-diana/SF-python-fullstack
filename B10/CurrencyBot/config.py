@@ -1,4 +1,5 @@
-TOKEN = '5493138604:AAHiqdg6pnHWvxS3XfX86CUTQEhcYEMHja0'
+from dotenv import load_dotenv
+load_dotenv()
 
 currencies = {
     'евро': 'EUR',
