@@ -1,0 +1,17 @@
+.form-query {
+    width: 50%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 0 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+}
+.j-result {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.card-image {
+    width: 150px;
+    height: 100px;
+}

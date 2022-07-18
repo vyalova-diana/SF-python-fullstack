@@ -1,0 +1,14 @@
+.form-query {
+    width: 50%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    padding: 0 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+}
+.j-result {
+    width: 50%;
+    display: flex;
+    justify-content: center
+}
+
