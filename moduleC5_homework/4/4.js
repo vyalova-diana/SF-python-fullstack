@@ -1,19 +1,22 @@
-function checkValue(form, callback) {
+function checkValue(form) {
     let width = Number(form.elements["width"].value);
     let height = Number(form.elements["height"].value);
 
     if ((width>=100 && width<=300) && (height>=100 && height<=300))
-       callback(`https://picsum.photos/${width}/${height}`, displayResult);
+       return `https://picsum.photos/${width}/${height}`;
     else
-        resultNode.textContent = 'Одно из чисел вне диапазона от 100 до 300';
+        throw new Error(`Одно из чисел вне диапазона от 100 до 300`);
 
 }
 
-function useRequest(url, callback) {
-    fetch(url)
-    .then((response) => {return response.url;})
-    .then((imgUrl) => { callback(imgUrl); })
-    .catch(() => { console.log('error'); });
+async function useRequest(url) {
+    let response = await fetch(url);
+    if (response.ok) {
+        return response.url;
+    }
+    else{
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
 }
 
 function displayResult(imgUrl) {
@@ -30,8 +33,18 @@ function displayResult(imgUrl) {
 const formNode = document.querySelector('.form-query');
 const resultNode = document.querySelector('.j-result');
 
-formNode.addEventListener("submit", function (event) {
+formNode.addEventListener("submit", async function (event) {
     // stop form submission
     event.preventDefault();
-    checkValue(this,useRequest);
+    resultNode.innerHTML = "";
+
+    try {
+        let checkResult = checkValue(this);
+        let requestResult = await useRequest(checkResult);
+        displayResult(requestResult);
+    }
+    catch(e){
+        resultNode.innerHTML = e.message;
+    }
+
 });

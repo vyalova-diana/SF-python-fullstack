@@ -1,4 +1,4 @@
-function checkValue(form, callback) {
+function checkValue(form) {
     let page = Number(form.elements["page"].value);
     let limit = Number(form.elements["limit"].value);
 
@@ -6,22 +6,26 @@ function checkValue(form, callback) {
     let isLimitValid = limit>=1 && limit<=10;
 
     if (isPageValid && isLimitValid)
-            callback(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`, displayResult);
+        return `https://picsum.photos/v2/list?page=${page}&limit=${limit}`;
     else if (isPageValid)
-            resultNode.textContent = 'Лимит вне диапазона от 1 до 10';
-        else if (isLimitValid)
-            resultNode.textContent = 'Номер страницы вне диапазона от 1 до 10';
-        else
-            resultNode.textContent = 'Номер страницы и лимит вне диапазона от 1 до 10';
+        throw new Error(`Лимит вне диапазона от 1 до 10`);
+    else if (isLimitValid)
+        throw new Error(`Номер страницы вне диапазона от 1 до 10`);
+    else
+        throw new Error(`Номер страницы и лимит вне диапазона от 1 до 10`);
 }
 
-function useRequest(url, callback) {
-    fetch(url)
-    .then((response) => {return response.json();})
-    .then((jsonList) => {
-        localStorage.setItem('myJSON', JSON.stringify(jsonList));
-        callback(jsonList); })
-    .catch(() => { console.log('error'); });
+async function useRequest(url) {
+    let response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    else{
+        let jsonResponse = await response.json();
+        localStorage.setItem('myJSON', JSON.stringify(jsonResponse));
+        return jsonResponse;
+
+    }
 }
 
 function displayResult(apiData) {
@@ -55,8 +59,17 @@ window.addEventListener('load', () => {
     }
 
 });
-formNode.addEventListener("submit", function (event) {
+formNode.addEventListener("submit", async function (event) {
     // stop form submission
     event.preventDefault();
-    checkValue(this,useRequest);
+
+    try {
+        let checkResult = checkValue(this);
+        let requestResult = await useRequest(checkResult);
+        displayResult(requestResult);
+    }
+    catch(e){
+        resultNode.innerHTML = e.message;
+    }
+
 });
