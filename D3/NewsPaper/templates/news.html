@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+    <h1>Все новости ({{news|length}})</h1>
+    {% for n in news %}
+        {{n.title|censor}} {{n.date|date:'d.m.Y'}} {{n.content|truncatechars:50|censor}}
+        <br>
+    {% endfor %}
+{% endblock content %}
