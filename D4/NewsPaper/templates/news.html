@@ -1,0 +1,37 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+News
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+    <h1>Все новости ({{news|length}})</h1>
+    {% for n in news %}
+        {{n.title|censor}} {{n.date|date:'d.m.Y'}} {{n.content|truncatechars:50|censor}}
+        <br>
+    {% endfor %}
+
+    {% if is_paginated %}
+
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+    {% endif %}
+
+{% endblock content %}

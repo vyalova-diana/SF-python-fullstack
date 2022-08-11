@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+NewsDetail
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h1>{{newsDetail.title|censor}}</h1>
+by {{newsDetail.author.user.get_username}}
+{{newsDetail.date|date:'d-m-Y H:i'}}
+<br> Rating: {{newsDetail.rating}}
+<p>{{newsDetail.content|censor}}</p>
+{% endblock content %}
