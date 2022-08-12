@@ -5,13 +5,23 @@
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
-    <h1>Все новости ({{news|length}})</h1>
+    <h1>Все новости ({{paginator.count}})</h1>
+    <a href="{% url 'post_create' %}">Добавить новый пост</a>
+    <br><br>
+
     {% for n in news %}
-        {{n.title|censor}} {{n.date|date:'d.m.Y'}} {{n.content|truncatechars:50|censor}}
-        <br>
+        <div>
+            <a href="{% url 'news_detail' n.id %}">{{ n.title|censor }}</a>
+            {{n.date|date:'d.m.Y'}} {{n.content|truncatechars:50|censor}}
+           <td ><a href="{% url 'news_edit' n.id %}"><u>Редактировать</u></a></td>
+           <td><a href="{% url 'news_delete' n.id %}"><u> Удалить </u></a></td>
+        </div>
+
+
     {% endfor %}
+
+
 
     {% if is_paginated %}
 

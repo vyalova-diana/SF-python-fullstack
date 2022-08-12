@@ -6,7 +6,6 @@
 News
 {% endblock title %}
 
-<!-- В контенте на странице мы выводим все товары -->
 {% block content %}
 
     <form method="GET">
@@ -16,7 +15,8 @@ News
 
     <h1>Все новости ({{filter.qs|length}})</h1>
     {% for object in paginated_response.object_list %}
-        {{object.title|censor}} {{object.date|date:'d.m.Y'}} {{object.content|truncatechars:50|censor}}
+        <a href="{% url 'news_detail' object.id %}">{{ object.title|censor }}</a>
+        {{object.date|date:'d.m.Y'}} {{object.content|truncatechars:50|censor}}
         <br>
     {% endfor %}
 
@@ -35,7 +35,6 @@ News
         {% endfor %}
 
 
-        <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
         {% if paginated_response.has_next %}
             <a href="?{% param_replace page=paginated_response.paginator.num_pages %}">Last</a>
         {% endif %}

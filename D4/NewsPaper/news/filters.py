@@ -1,9 +1,8 @@
-from django_filters import FilterSet, DateFilter  # импортируем filterset, чем-то напоминающий знакомые дженерики
+from django_filters import FilterSet, DateFilter
 from .models import Post
 from django.forms.widgets import DateInput
 
 
-# создаём фильтр
 class NewsFilter(FilterSet):
     date = DateFilter(lookup_expr='date__gt', label='Опубликовано после ',
                               widget=DateInput(format='%d.%m.%Y"', attrs={'type': 'date'}))
