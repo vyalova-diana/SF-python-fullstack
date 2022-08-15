@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import Post
 from .filters import NewsFilter
@@ -13,6 +13,12 @@ class NewsList(ListView):
     context_object_name = 'news'
     queryset = Post.objects.filter(type='NW').order_by('-date')
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_author'] = self.request.user.groups.filter(name='authors').exists()
+        context['username'] = self.request.user.get_username()
+        return context
 
 
 class NewsListSearch(ListView):
@@ -48,14 +54,16 @@ class NewsDetail(DetailView):
     queryset = Post.objects.filter(type='NW')
 
 
-class PostCreateView(CreateView):
+class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'post_create.html'
     form_class = PostForm
+    permission_required = 'news.add_post'
 
 
-class NewsEditView(UpdateView):
+class NewsEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'post_create.html'
     form_class = PostForm
+    permission_required = 'news.change_post'
 
     # метод get_object мы используем вместо queryset, чтобы получить информацию об объекте. в шаблоне переменная object.
     def get_object(self, **kwargs):
@@ -63,7 +71,8 @@ class NewsEditView(UpdateView):
         return Post.objects.get(pk=id)
 
 
-class NewsDeleteView(DeleteView):
+class NewsDeleteView(LoginRequiredMixin,  DeleteView):
     template_name = 'news_delete.html'
     queryset = Post.objects.filter(type='NW')
     success_url = '/news/'
+    permission_required = 'news.delete_post'
