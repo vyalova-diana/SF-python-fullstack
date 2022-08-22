@@ -14,14 +14,6 @@ News
     </form>
 
     <h1>Все новости ({{filter.qs|length}})</h1>
-    {% if chosen_categories %}
-        <div>
-        {% for cat in chosen_categories %}
-            <button><a href=''> #{{cat}} - Подписаться</a></button>
-        {% endfor %}
-        </div>
-        <br>
-    {% endif %}
     {% for object in paginated_response.object_list %}
         <a href="{% url 'news_detail' object.id %}">{{ object.title|censor }}</a>
         {{object.date|date:'d.m.Y'}} {{object.content|truncatechars:50|censor}}

@@ -7,9 +7,9 @@ class NewsFilter(FilterSet):
     date = DateFilter(lookup_expr='date__gt', label='Опубликовано после ',
                               widget=DateInput(format='%d.%m.%Y"', attrs={'type': 'date'}))
 
-    category = ModelMultipleChoiceFilter(
-        field_name='category__name', queryset=Category.objects.all()
-    )
+    # category = ModelMultipleChoiceFilter(
+    #     field_name='category__name', queryset=Category.objects.all()
+    # )
 
     class Meta:
         model = Post

@@ -1,8 +1,11 @@
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
-from .models import Post, Category
+
+from .models import Post, Category, Author
 from .filters import NewsFilter
 from .forms import PostForm
 
@@ -21,6 +24,26 @@ class NewsList(ListView):
         return context
 
 
+class NewsCategoryList(NewsList):
+    def get_queryset(self):
+        return self.queryset.filter(category=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category_id = self.kwargs.get('pk')
+        context['category'] = Category.objects.get(pk=category_id)
+        context['is_not_subscribed'] = category_id not in self.request.user.category_set.values_list('id', flat=True)
+
+        return context
+
+
+@login_required
+def category_subscribe(request, pk: int):
+    category = Category.objects.get(pk=pk)
+    category.subscribers.add(request.user)
+    return redirect(f'/news/category/{pk}')
+
+
 class NewsListSearch(ListView):
     model = Post
     template_name = 'news_search.html'
@@ -28,8 +51,8 @@ class NewsListSearch(ListView):
     queryset = Post.objects.filter(type='NW').order_by('-date')
     paginate_by = 10
 
-    def get_context_data(self,
-                         **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса
+    def get_context_data(self, **kwargs):  # забираем отфильтрованные объекты переопределяя метод get_context_data у
+        # наследуемого класса
         context = super().get_context_data(**kwargs)
         news_filter = NewsFilter(self.request.GET, queryset=self.get_queryset())
 
@@ -46,9 +69,6 @@ class NewsListSearch(ListView):
         context["filter"] = news_filter
         context["paginated_response"] = response
 
-        chosen_cat_pk = self.request.GET.getlist('category', default=None)
-        if chosen_cat_pk:
-            context['chosen_categories'] = Category.objects.filter(pk__in=chosen_cat_pk)
 
         return context
 
@@ -63,6 +83,13 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     form_class = PostForm
     permission_required = 'news.add_post'
 
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form.instance.author = Author.objects.get(user=self.request.user)   # Sets current user in Author field
+        form.send_email()   #send emails to category subscribers
+        return super().form_valid(form)
+
 
 class NewsEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     template_name = 'post_create.html'
@@ -75,8 +102,10 @@ class NewsEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
         return Post.objects.get(pk=id)
 
 
-class NewsDeleteView(LoginRequiredMixin,  DeleteView):
+class NewsDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'news_delete.html'
     queryset = Post.objects.filter(type='NW')
     success_url = '/news/'
     permission_required = 'news.delete_post'
+
+

@@ -7,11 +7,24 @@ News
 
 {% block content %}
     <h1>Все новости ({{paginator.count}})</h1>
-    <button><a href="{% url 'search' %}">Поиск</a></button>
-    {% if is_author %}
-    <button><a href="{% url 'post_create' %}">Добавить новый пост</a></button>
-    <br><br>
+    {% if category %}
+            <h2>#{{category.name}}</h2>
+            {% if is_not_subscribed %}
+                <button><a href="{% url 'category_subscribe' category.id%}">Подписаться</a></button>
+                <br><br>
+            {% endif %}
     {% endif %}
+
+    <div>
+        <button><a href="{% url 'search' %}">Поиск</a></button>
+        {% if is_author %}
+            <button><a href="{% url 'post_create' %}">Добавить новый пост</a></button>
+            <br><br>
+        {% endif %}
+    </div>
+
+
+
 
     {% for n in news %}
         <div>
@@ -19,7 +32,7 @@ News
             {{n.date|date:'d.m.Y'}} {{n.content|truncatechars:50|censor}}
 
             {% for cat in n.category.values %}
-                <a href="{% url 'search' %}?category={{cat.id}}"> #{{cat.name}}</a>
+                <a href="{% url 'news_category' cat.id %}"> #{{cat.name}}</a>
             {% endfor %}
 
             {% if is_author and username == n.author.user.get_username %}
