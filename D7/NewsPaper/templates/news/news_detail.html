@@ -1,0 +1,20 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+NewsDetail
+{% endblock title %}
+
+
+{% block content %}
+<h1>{{object.title|censor}}</h1>
+by {{object.author.user.get_username}}
+{{object.date|date:'d-m-Y H:i'}}
+<br> Rating: {{object.rating}}
+Categories:
+{% for category in object.category.values %}
+    <a href="{% url 'news_category' category.id %}"> #{{category.name}}</a>
+{% endfor %}
+
+<p>{{object.content|censor}}</p>
+{% endblock content %}

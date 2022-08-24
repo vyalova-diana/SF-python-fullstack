@@ -1,0 +1,23 @@
+{% extends 'flatpages/default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+PostCreateView
+{% endblock title %}
+
+{% block content %}
+<h3>Информация о товаре</h3>
+<form method="POST">
+    {% csrf_token %}
+    {{ form }} <!-- Теперь нам нужна только готовая форма и кнопка -->
+
+    {% if limit_is_reached %}
+        <input type="submit" value="Лимит достигнут!" disabled>
+    {% else %}
+        <input type="submit" value="Добавить пост">
+    {% endif %}
+
+</form>
+<br>
+
+{% endblock content %}

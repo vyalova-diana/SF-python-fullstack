@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Здравствуй, {{username}}. Вот твой недельный дайджест #{{category}}!</h1>
+
+    {% for news_post in news_list %}
+            <h2>{{ news_post.title }}<a href="http://127.0.0.1:8000{% url 'news_detail' news_post.id %}"> Читать</a></h2>
+    {% endfor %}
+
+</body>
+</html>
