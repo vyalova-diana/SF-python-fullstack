@@ -3,7 +3,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
-
+from datetime import date
 
 from .models import Post, Category, Author
 from .filters import NewsFilter
@@ -12,7 +12,7 @@ from .forms import PostForm
 
 class NewsList(ListView):
     model = Post
-    template_name = 'news.html'
+    template_name = 'news/news.html'
     context_object_name = 'news'
     queryset = Post.objects.filter(type='NW').order_by('-date')
     paginate_by = 10
@@ -46,7 +46,7 @@ def category_subscribe(request, pk: int):
 
 class NewsListSearch(ListView):
     model = Post
-    template_name = 'news_search.html'
+    template_name = 'news/news_search.html'
     context_object_name = 'news'
     queryset = Post.objects.filter(type='NW').order_by('-date')
     paginate_by = 10
@@ -69,43 +69,47 @@ class NewsListSearch(ListView):
         context["filter"] = news_filter
         context["paginated_response"] = response
 
-
         return context
 
 
 class NewsDetail(DetailView):
-    template_name = 'news_detail.html'
+    template_name = 'news/news_detail.html'
     queryset = Post.objects.filter(type='NW')
 
 
 class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
-    template_name = 'post_create.html'
+    template_name = 'news/post_create.html'
     form_class = PostForm
     permission_required = 'news.add_post'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
-        form.instance.author = Author.objects.get(user=self.request.user)   # Sets current user in Author field
-        form.send_email()   #send emails to category subscribers
-        return super().form_valid(form)
+
+        post = form.save(commit=False)
+        post.author = Author.objects.get(user=self.request.user)  # Sets current user in Author field
+        limit = Post.objects.filter(date__date=date.today(), author=post.author).count()
+        if limit < 3:
+            return super(PostCreateView, self).form_valid(form)
+        else:
+            context = self.get_context_data(form=form)
+            context['limit_is_reached'] = True
+            return self.render_to_response(context)
 
 
 class NewsEditView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
-    template_name = 'post_create.html'
+    template_name = 'news/post_create.html'
     form_class = PostForm
     permission_required = 'news.change_post'
 
-    # метод get_object мы используем вместо queryset, чтобы получить информацию об объекте. в шаблоне переменная object.
+    # Метод get_object мы используем вместо queryset, чтобы получить информацию об объекте. в шаблоне переменная object.
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
         return Post.objects.get(pk=id)
 
 
 class NewsDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = 'news_delete.html'
+    template_name = 'news/news_delete.html'
     queryset = Post.objects.filter(type='NW')
     success_url = '/news/'
     permission_required = 'news.delete_post'
-
-

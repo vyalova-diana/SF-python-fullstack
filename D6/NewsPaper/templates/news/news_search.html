@@ -19,7 +19,7 @@ News
         {{object.date|date:'d.m.Y'}} {{object.content|truncatechars:50|censor}}
 
         {% for cat in object.category.values %}
-                <a href="{% url 'search' %}?category={{cat.id}}"> #{{cat.name}}</a>
+                <a href="{% url 'news_category' cat.id %}"> #{{cat.name}}</a>
         {% endfor %}
         <br>
     {% endfor %}

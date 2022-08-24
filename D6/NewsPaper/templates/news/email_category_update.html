@@ -6,9 +6,11 @@
     <title>Document</title>
 </head>
 <body>
+    <h1>Здравствуй, {{username}}. Новая статья в твоём любимом разделе!</h1>
     <h2>{{ news_post.title }}</h2>
     <p> {{ news_post.content|truncatechars:50 }} </p>
-    Здравствуй, {{username}}. Новая статья в твоём любимом разделе!
+    <p><a href="http://127.0.0.1:8000{% url 'news_detail' news_post.id %}">Читать</a></p>
+
 
 </body>
 </html>

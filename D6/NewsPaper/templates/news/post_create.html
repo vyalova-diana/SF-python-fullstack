@@ -10,6 +10,14 @@ PostCreateView
 <form method="POST">
     {% csrf_token %}
     {{ form }} <!-- Теперь нам нужна только готовая форма и кнопка -->
-    <input type="submit" value="Добавить пост">
+
+    {% if limit_is_reached %}
+        <input type="submit" value="Лимит достигнут!" disabled>
+    {% else %}
+        <input type="submit" value="Добавить пост">
+    {% endif %}
+
 </form>
+<br>
+
 {% endblock content %}

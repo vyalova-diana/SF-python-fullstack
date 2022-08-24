@@ -12,3 +12,6 @@ def censor(value):
         return str(filtered_str)
     else:
         raise ValueError(f'Нельзя применить цензуру к данному типу: {type(value)}')
+
+
+

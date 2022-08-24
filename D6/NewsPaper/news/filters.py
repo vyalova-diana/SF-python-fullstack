@@ -1,15 +1,11 @@
-from django_filters import FilterSet, DateFilter, ModelMultipleChoiceFilter
+from django_filters import FilterSet, DateFilter
 from .models import Post, Category
-from django.forms.widgets import DateInput, CheckboxSelectMultiple
+from django.forms.widgets import DateInput
 
 
 class NewsFilter(FilterSet):
     date = DateFilter(lookup_expr='date__gt', label='Опубликовано после ',
-                              widget=DateInput(format='%d.%m.%Y"', attrs={'type': 'date'}))
-
-    # category = ModelMultipleChoiceFilter(
-    #     field_name='category__name', queryset=Category.objects.all()
-    # )
+                      widget=DateInput(format='%d.%m.%Y"', attrs={'type': 'date'}))
 
     class Meta:
         model = Post

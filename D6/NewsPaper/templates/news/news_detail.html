@@ -13,7 +13,7 @@ by {{object.author.user.get_username}}
 <br> Rating: {{object.rating}}
 Categories:
 {% for category in object.category.values %}
-    <a href="{% url 'search' %}?category={{category.id}}"> #{{category.name}}</a>
+    <a href="{% url 'news_category' category.id %}"> #{{category.name}}</a>
 {% endfor %}
 
 <p>{{object.content|censor}}</p>
