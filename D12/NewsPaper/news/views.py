@@ -33,7 +33,11 @@ class NewsCategoryList(NewsList):
         context = super().get_context_data(**kwargs)
         category_id = self.kwargs.get('pk')
         context['category'] = Category.objects.get(pk=category_id)
-        context['is_not_subscribed'] = category_id not in self.request.user.category_set.values_list('id', flat=True)
+        if self.request.user.is_authenticated:
+            context['is_not_subscribed'] = category_id not in self.request.user.category_set.values_list('id',
+                                                                                                         flat=True)
+        else:
+            context['is_not_subscribed'] = True
 
         return context
 
