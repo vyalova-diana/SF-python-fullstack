@@ -1,0 +1,18 @@
+{% extends 'default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+PostDetail
+{% endblock title %}
+
+{% block content %}
+by {{object.user.get_username}}
+{{object.date|date:'d-m-Y H:i'}}
+<p>{{object.content|censor}}</p>
+
+<h2>Вы действительно хотите удалить данный комментарий?</h2>
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Подтвердить">
+</form>
+{% endblock content %}

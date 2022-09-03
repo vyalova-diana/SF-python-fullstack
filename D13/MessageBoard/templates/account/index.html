@@ -1,0 +1,22 @@
+{% extends 'default.html' %}
+
+{% block title %}
+Кабинет
+{% endblock title %}
+
+{% block content %}
+<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
+
+
+{% if is_not_author %}
+    <p>Статус: Пользователь</p>
+    <button> <a href="{% url 'upgrade' %}">Стать автором</a> </button>
+    <br><br>
+{% else %}
+    <p>Статус: Автор</p>
+    <button><a href="{% url 'posts' %}">Мои посты</a></button>
+{% endif %}
+
+
+<button> <a href="/accounts/logout/">Выйти</a> </button>
+{% endblock %}

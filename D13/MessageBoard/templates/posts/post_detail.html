@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="\static\django_ckeditor_5\dist\styles.css" type="text/css">
+{% extends 'default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+PostDetail
+{% endblock title %}
+
+
+{% block content %}
+<h1>{{object.title|censor}}</h1>
+by {{object.author.user.get_username}}
+{{object.date|date:'d-m-Y H:i'}}
+
+Categories:
+{% for category in object.category.values %}
+    <a href="{% url 'posts_category' category.id %}"> #{{category.name}}</a>
+{% endfor %}
+
+<div class="ck-content">
+    <p>{{object.content|censor|safe}}</p>
+</div>
+
+<hr>
+<button><a href="{% url 'comment_create' object.id%}">Добавить комментарий</a></button>
+<h4>Комментарии</h4>
+{% if comments %}
+    <table class="table">
+        <tr>
+            <th>User</th>
+            <th>Comment</th>
+            <th>Date</th>
+        </tr>
+        {% for comment in comments %}
+             <tr>
+                <td>{{comment.user.username}}</td>
+                <td>{{comment.content|censor}}</td>
+                <td>{{comment.date|date:'d.m.Y'}}</td>
+             </tr>
+        {% endfor %}
+    </table>
+{% else %}
+        <p>Нет принятых автором комментариев</p>
+{% endif %}
+
+{% endblock content %}

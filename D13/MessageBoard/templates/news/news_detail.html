@@ -1,0 +1,16 @@
+<link rel="stylesheet" href="\static\django_ckeditor_5\dist\styles.css" type="text/css">
+{% extends 'default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+NewsDetail
+{% endblock title %}
+
+
+{% block content %}
+<h1>{{object.title|censor}}</h1>
+{{object.date|date:'d-m-Y H:i'}}
+<div class="ck-content">
+    <p>{{ object.content|safe }}</p>
+</div>
+{% endblock content %}

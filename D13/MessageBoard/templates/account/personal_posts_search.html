@@ -1,0 +1,77 @@
+{% extends 'default.html' %}
+{% load custom_filters %}.
+{% load custom_tags %}.
+
+{% block title %}
+PersonalPostsSearch
+{% endblock title %}
+
+{% block content %}
+
+    <form method="GET">
+        {{ filter.form }}
+        <input type="submit" value="Найти">
+    </form>
+
+    <h1>Ваши посты ({{filter.qs|length}})</h1>
+    {% for object in paginated_response.object_list %}
+        <a href="{% url 'post_detail' object.id %}">{{ object.title|censor }}</a>
+        {{object.date|date:'d.m.Y'}}
+        <button><a href="{% url 'post_edit' object.id %}">Редактировать</a></button>
+        <button><a href="{% url 'post_delete' object.id %}">Удалить</a></button>
+
+        {% for cat in object.category.values %}
+                <a href="{% url 'posts_category' cat.id %}"> #{{cat.name}}</a>
+        {% endfor %}
+        <br>
+
+        {% if object.comment_set %}
+            <table class="table">
+                <tr>
+                    <th>User</th>
+                    <th>Comment</th>
+                    <th>Date</th>
+                    <th>Approval</th>
+                </tr>
+                {% for comment in object.comment_set %}
+                     <tr>
+                         <td>{{comment.user.username}}</td>
+                         <td>{{comment.content}}</td>
+                         <td>{{comment.date|date:'d.m.Y'}}</td>
+                         <td>{{comment.approval|yesno:"+,-,error"}}</td>
+
+                     </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+                <table class="table">
+                    <tr>
+                        <td>Нет комментариев</td>
+                    </tr>
+        {% endif %}
+
+    {% endfor %}
+
+    {% if is_paginated %}
+
+        {% if paginated_response.has_previous %}
+            <a href="?{% param_replace page=1 %}">First</a>
+        {% endif %}
+
+        {% for num in paginated_response.paginator.page_range %}
+            {% if paginated_response.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > paginated_response.number|add:'-3' and num < paginated_response.number|add:'3' %}
+                <a href="?{% param_replace page=num %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+
+        {% if paginated_response.has_next %}
+            <a href="?{% param_replace page=paginated_response.paginator.num_pages %}">Last</a>
+        {% endif %}
+
+
+    {% endif %}
+
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends 'default.html' %}
+{% load custom_filters %}.
+
+{% block title %}
+PostDetail
+{% endblock title %}
+
+{% block content %}
+<h1>{{object.title|censor}}</h1>
+by {{object.author.user.get_username}}
+{{object.date|date:'d-m-Y H:i'}}
+Categories:
+{% for category in object.category.values %}
+    <a href="{% url 'posts_category' category.id %}"> #{{category.name}}</a>
+{% endfor %}
+<p>{{object.content|censor|safe}}</p>
+
+<h2>Вы действительно хотите удалить данную новость?</h2>
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Подтвердить">
+</form>
+{% endblock content %}
