@@ -8,7 +8,9 @@
 <body>
     {% load account %} <!-- Загружаем тег который позволит получить нам ссылку на подтверждение -->
     <h1>Thank you for registering {{ user.username }}!</h1>
-    <h3>Please follow <a href="{{ activate_url }}">the link</a> to activate your account</h3>
+
+    <h3>Your one time activation code: {{ otp }} </h3>
+    <h4>Please follow <a href="{{ activate_url }}">the link</a> to enter the code to activate your account</h4>
      <!-- Всставляем ссылку на активацию -->
 </body>
 </html>

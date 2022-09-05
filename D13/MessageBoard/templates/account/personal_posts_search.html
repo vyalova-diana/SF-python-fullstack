@@ -14,43 +14,52 @@ PersonalPostsSearch
     </form>
 
     <h1>Ваши посты ({{filter.qs|length}})</h1>
-    {% for object in paginated_response.object_list %}
-        <a href="{% url 'post_detail' object.id %}">{{ object.title|censor }}</a>
-        {{object.date|date:'d.m.Y'}}
-        <button><a href="{% url 'post_edit' object.id %}">Редактировать</a></button>
-        <button><a href="{% url 'post_delete' object.id %}">Удалить</a></button>
+    <button><a href="{% url 'post_create' %}">Создать пост</a></button>
+    <hr>
+    {% if paginated_response.object_list.exists %}
+        {% for object in paginated_response %}
+            <a href="{% url 'post_detail' object.id %}">{{ object.title|censor }}</a>
+            {{object.date|date:'d.m.Y'}}
+            <button><a href="{% url 'post_edit' object.id %}">Редактировать</a></button>
+            <button><a href="{% url 'post_delete' object.id %}">Удалить</a></button>
 
-        {% for cat in object.category.values %}
-                <a href="{% url 'posts_category' cat.id %}"> #{{cat.name}}</a>
-        {% endfor %}
-        <br>
+            {% for cat in object.category.values %}
+                    <a href="{% url 'posts_category' cat.id %}"> #{{cat.name}}</a>
+            {% endfor %}
+            <br>
 
-        {% if object.comment_set %}
-            <table class="table">
-                <tr>
-                    <th>User</th>
-                    <th>Comment</th>
-                    <th>Date</th>
-                    <th>Approval</th>
-                </tr>
-                {% for comment in object.comment_set %}
-                     <tr>
-                         <td>{{comment.user.username}}</td>
-                         <td>{{comment.content}}</td>
-                         <td>{{comment.date|date:'d.m.Y'}}</td>
-                         <td>{{comment.approval|yesno:"+,-,error"}}</td>
-
-                     </tr>
-                {% endfor %}
-            </table>
-        {% else %}
+            {% if object.comment_set.exists %}
                 <table class="table">
                     <tr>
-                        <td>Нет комментариев</td>
+                        <th>User</th>
+                        <th>Comment</th>
+                        <th>Date</th>
+                        <th>Approval</th>
+                        <th>Actions</th>
                     </tr>
-        {% endif %}
+                    {% for comment in object.comment_set.all %}
+                         <tr>
+                             <td>{{comment.user}}</td>
+                             <td>{{comment.content}}</td>
+                             <td>{{comment.date|date:'d.m.Y'}}</td>
+                             <td>{{comment.approval|yesno:"+,-,error"}}</td>
+                             <td>
+                                <button><a href="{% url 'comment_approve' object.id comment.id %}">Принять</a></button>
+                                <button><a href="{% url 'comment_delete' object.id comment.id %}">Удалить</a></button>
+                             </td>
+                         </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                    <table class="table">
+                        <tr>
+                            <td>Нет комментариев</td>
+                        </tr>
+            {% endif %}
 
-    {% endfor %}
+        {% endfor %}
+
+    {% endif %}
 
     {% if is_paginated %}
 

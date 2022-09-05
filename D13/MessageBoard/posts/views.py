@@ -2,7 +2,7 @@ from django.http import Http404
 from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import redirect
 from datetime import date
 from django.core.cache import cache
@@ -21,7 +21,7 @@ class PostsList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_author'] = self.request.user.groups.filter(name='authors').exists()
+        context['is_author'] = self.request.user.groups.filter(name='Authors').exists()
         # context['username'] = self.request.user.get_username()
         return context
 
@@ -144,16 +144,15 @@ class CommentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView)
 
         comment = form.save(commit=False)
         comment.user = self.request.user
-        print(comment.user)
         comment.post = Post.objects.get(pk=self.kwargs.get('pk'))
-        print(comment.post)
+
         return super(CommentCreateView, self).form_valid(form)
 
 
 class CommentDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'posts/comment_delete.html'
     queryset = Comment.objects.all()
-    # success_url = '/accounts/profile/posts/'
+    success_url = '/accounts/profile/posts/'
     permission_required = 'comments.delete_comment'
 
     def get_object(self, queryset=None):
@@ -165,9 +164,14 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
 
         queryset = Comment.objects.get(post_id=post, id=comment)
 
-        context = {'post_id': post, 'comment_id': comment}
+        # context = {'post_id': post, 'comment_id': comment}
         return queryset
 
-    def get_success_url(self): #FIX
-        previous = self.request.META.get('HTTP_REFERER')
-        return redirect(previous)
+
+# @permission_required('comments.change_comment')
+def comment_approve(request,**kwargs):
+    comment = Comment.objects.get(post_id=kwargs['pk_post'], id=kwargs['pk_comment'])
+    comment.approval = True
+    comment.save()
+
+    return redirect('/accounts/profile/posts/')

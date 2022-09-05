@@ -2,11 +2,39 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
-from posts.models import Author, Post
-from .filters import PostsFilter
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from allauth.account.views import ConfirmEmailView
+from django.urls import reverse
+
+from posts.models import Author, Post
+from .models import OneTimeCode
+from .filters import PostsFilter
+
+from django.db.models import Prefetch
+
+class ConfirmEmailView(ConfirmEmailView):
+    """
+    Override account.views.ConfirmEmailView
+    """
+
+    def post(self, *args, **kwargs):
+        otp = self.request.POST['otp']
+
+        if OneTimeCode.objects.filter(user__pk=self.get_object().email_address.user_id, code=otp).exists():
+            OneTimeCode.objects.filter(code=otp).delete()
+            return super().post(self, *args, **kwargs)
+        else:
+            User.objects.get(pk=self.get_object().email_address.user_id).delete()
+            redirect_url = self.get_redirect_url()
+            if not redirect_url:
+                ctx = self.get_context_data()
+                return self.render_to_response(ctx)
+            return redirect(redirect_url)
+
+
+confirm_email = ConfirmEmailView.as_view()
 
 
 class AccountView(LoginRequiredMixin, TemplateView):
@@ -14,30 +42,30 @@ class AccountView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_not_author'] = not self.request.user.groups.filter(name='authors').exists()
+        context['is_not_author'] = not self.request.user.groups.filter(name='Authors').exists()
         return context
 
 
 @login_required
 def upgrade_me(request):
     user = request.user
-    authors_group = Group.objects.get(name='authors')
-    if not user.groups.filter(name='authors').exists():
+    authors_group = Group.objects.get(name='Authors')
+    if not user.groups.filter(name='Authors').exists():
         authors_group.user_set.add(user)
         Author.objects.create(user=user)
 
     return redirect('/')
 
 
-class PostsListSearch(ListView):
+class PostsListSearch(LoginRequiredMixin, ListView):
     model = Post
     template_name = 'account/personal_posts_search.html'
     context_object_name = 'posts'
-    # queryset = Post.objects.filter(author_user=self.request.user).order_by('-date')
     paginate_by = 10
 
     def get_queryset(self):
-        queryset = Post.objects.filter(author_user=self.request.user).order_by('-date')
+        queryset = Post.objects.filter(author__user=self.request.user) \
+                               .prefetch_related('comment_set', 'category').order_by('-date')
 
         return queryset
 
@@ -60,4 +88,3 @@ class PostsListSearch(ListView):
         context["paginated_response"] = response
 
         return context
-

@@ -12,5 +12,5 @@ class PostsFilter(FilterSet):
         fields = {
             'author__user__username': ['iexact'],
             'title': ['icontains'],
-            'category': ['iexact']
+            'category': ['exact']
         }
