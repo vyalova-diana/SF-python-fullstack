@@ -17,10 +17,7 @@ Posts
 
     <div>
         <button><a href="{% url 'search' %}">Поиск</a></button>
-<!--        {% if is_author %}-->
-<!--            <button><a href="{% url 'post_create' %}">Добавить новый пост</a></button>-->
-<!--            <br><br>-->
-<!--        {% endif %}-->
+
     </div>
 
 
@@ -35,11 +32,6 @@ Posts
                 <a href="{% url 'posts_category' cat.id %}"> #{{cat.name}}</a>
             {% endfor %}
 
-<!--            {% if is_author and username == n.author.user.get_username %}-->
-<!--                <button><a href="{% url 'post_edit' n.id %}">Редактировать</a></button>-->
-<!--                <button><a href="{% url 'post_delete' n.id %}">Удалить</a></button>-->
-
-<!--            {% endif %}-->
         </div>
          <br>
     {% endfor %}

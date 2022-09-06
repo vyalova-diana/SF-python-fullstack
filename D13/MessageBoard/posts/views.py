@@ -22,7 +22,6 @@ class PostsList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_author'] = self.request.user.groups.filter(name='Authors').exists()
-        # context['username'] = self.request.user.get_username()
         return context
 
 
@@ -111,7 +110,6 @@ class PostCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
 
         post = form.save(commit=False)
         post.author = Author.objects.get(user=self.request.user)  # Sets current user in Author field
-        # limit = Post.objects.filter(date__date=date.today(), author=post.author).count()
         return super(PostCreateView, self).form_valid(form)
 
 
@@ -136,7 +134,7 @@ class PostDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 class CommentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     template_name = 'posts/comment_create.html'
     form_class = CommentForm
-    permission_required = 'comments.add_comment'
+    permission_required = 'posts.add_comment'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
@@ -153,7 +151,7 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'posts/comment_delete.html'
     queryset = Comment.objects.all()
     success_url = '/accounts/profile/posts/'
-    permission_required = 'comments.delete_comment'
+    permission_required = 'posts.delete_comment'
 
     def get_object(self, queryset=None):
         if queryset is None:
@@ -164,12 +162,11 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
 
         queryset = Comment.objects.get(post_id=post, id=comment)
 
-        # context = {'post_id': post, 'comment_id': comment}
         return queryset
 
 
-# @permission_required('comments.change_comment')
-def comment_approve(request,**kwargs):
+@permission_required('posts.change_comment')
+def comment_approve(request, **kwargs):
     comment = Comment.objects.get(post_id=kwargs['pk_post'], id=kwargs['pk_comment'])
     comment.approval = True
     comment.save()

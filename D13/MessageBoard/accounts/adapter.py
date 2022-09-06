@@ -9,6 +9,3 @@ class MyAccountAdapter(DefaultAccountAdapter):
         context["otp"] = OneTimeCode.objects.get(user__email=email).code
         super().send_mail(template_prefix, email, context)
 
-    # def respond_email_verification_sent(self, request, user):
-    #     # return HttpResponseRedirect(reverse("account_email_verification_sent"))
-    #     return HttpResponseRedirect(reverse("account_otp_confirm"))

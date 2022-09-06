@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Здравствуй, {{username}}. Вы получили новый комментарий!</h1>
+    <h2>{{ comment.user.username }} {{ comment.date|date:'d-m-Y H:i' }}</h2>
+    <p>{{ comment.content }} </p>
+
+    <p><a href="http://127.0.0.1:8000{% url 'posts' %}?title__icontains={{ comment.post.title }}">Управление комментариями</a></p>
+
+
+</body>
+</html>
