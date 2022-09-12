@@ -1,7 +1,7 @@
 # SF-E4.10
 
 ## Docker Hub
-- https://hub.docker.com/repository/docker/dianavdockerid/sf_e4
+- https://hub.docker.com/r/dianavdockerid/sf_e4
 
 ### Installation
 
